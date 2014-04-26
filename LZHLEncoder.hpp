@@ -1,12 +1,14 @@
 #ifndef __J2K__LZH__LZHLEncoder_HPP__
 #define __J2K__LZH__LZHLEncoder_HPP__
 
-#include "Incs.h"
+#include "LZHLEncoderStat.hpp"
+#include "LZHMacro.hpp"
+#include <cstddef>
 
 class LZHLEncoder {
 public:
   enum { maxMatchOver = 517, maxRaw = 64 };
-  LZHLEncoder( LZHLEncoderStat* stat_, BYTE* dst_ );
+  LZHLEncoder( LZHLEncoderStat* stat_, uint8_t* dst_ );
   ~LZHLEncoder();
 
 private:
@@ -14,9 +16,9 @@ private:
   HUFFINT* sstat;
   int& nextStat;
 
-  BYTE* dst;
-  BYTE* dstBegin;
-  UINT32 bits;
+  uint8_t* dst;
+  uint8_t* dstBegin;
+  uint32_t bits;
   int nBits;
 
 public:
@@ -27,15 +29,15 @@ public:
 public:
   size_t flush();
 
-  void putRaw( const BYTE* src, size_t sz );
-  void putMatch( const BYTE* src, size_t nRaw, size_t matchOver, size_t disp );
+  void putRaw( const uint8_t* src, size_t sz );
+  void putMatch( const uint8_t* src, size_t nRaw, size_t matchOver, size_t disp );
 
 private:
   void _callStat();
 
-  void _put( UINT16 symbol );
-  void _put( UINT16 symbol, int codeBits, UINT32 code );
-  void _putBits( int codeBits, UINT32 code );
+  void _put( uint16_t symbol );
+  void _put( uint16_t symbol, int codeBits, uint32_t code );
+  void _putBits( int codeBits, uint32_t code );
 };
 
 #endif

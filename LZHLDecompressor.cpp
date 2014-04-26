@@ -1,8 +1,5 @@
-#ifndef __J2K__LZH__LZHLDecompressor_CPP__
-#define __J2K__LZH__LZHLDecompressor_CPP__
-
-#include "Incs.h"
-#include "stdio.h"
+#include "LZHLDecompressor.hpp"
+#include <cassert>
 
 LZHLDecompressor::LZHLDecompressor() {
   nBits = 0;
@@ -11,7 +8,7 @@ LZHLDecompressor::LZHLDecompressor() {
 
 LZHLDecompressor::~LZHLDecompressor() { }
 
-inline int LZHLDecompressor::_get( const BYTE*& src, const BYTE* srcEnd, int n )
+inline int LZHLDecompressor::_get( const uint8_t*& src, const uint8_t* srcEnd, int n )
 {
   assert( n <= 8 );
   if ( nBits < n ) {
@@ -30,18 +27,18 @@ inline int LZHLDecompressor::_get( const BYTE*& src, const BYTE* srcEnd, int n )
   return ret;
 }
 
-BOOL LZHLDecompressor::decompress( BYTE* dst, size_t* dstSz, const BYTE* src, size_t* srcSz )
+bool LZHLDecompressor::decompress( uint8_t* dst, size_t* dstSz, const uint8_t* src, size_t* srcSz )
 {
-  BYTE* startDst = dst;
-  const BYTE* startSrc = src;
-  const BYTE* endSrc = src + *srcSz;
-  const BYTE* endDst = dst + *dstSz;
+  uint8_t* startDst = dst;
+  const uint8_t* startSrc = src;
+  const uint8_t* endSrc = src + *srcSz;
+  const uint8_t* endDst = dst + *dstSz;
   nBits = 0;
 
   for (;;) {
     int grp = _get( src, endSrc, 4 );
     if ( grp < 0 ) {
-      return FALSE;
+      return false;
     }
 
     Group& group = groupTable[ grp ];
@@ -56,13 +53,13 @@ BOOL LZHLDecompressor::decompress( BYTE* dst, size_t* dstSz, const BYTE* src, si
       int got = _get( src, endSrc, nBits );
 
       if ( got < 0 ) {
-        return FALSE;
+        return false;
       }
 
       int pos = group.pos + got;
 
       if ( pos >= NHUFFSYMBOLS ) {
-        return FALSE;
+        return false;
       }
 
       symbol = symbolTable[ pos ];
@@ -72,14 +69,14 @@ BOOL LZHLDecompressor::decompress( BYTE* dst, size_t* dstSz, const BYTE* src, si
     ++stat[ symbol ];
 
     int matchOver;
-    BOOL shift = FALSE;
+    bool shift = false;
 
     if ( symbol < 256 ) {
       if ( dst >= endDst ) {
-        return FALSE;
+        return false;
       }
 
-      *dst++ = (BYTE)symbol;
+      *dst++ = (uint8_t)symbol;
       _toBuf( symbol );
       continue; //forever
 
@@ -93,9 +90,10 @@ BOOL LZHLDecompressor::decompress( BYTE* dst, size_t* dstSz, const BYTE* src, si
       int lastNBits = 0;
       int pos = 0;
 
-      for ( i=0; i < 16 ; ++i ) {
+      for ( int i=0; i < 16 ; ++i ) {
 
-        for ( int n=0 ;; ++n )
+        int n;
+        for ( n=0 ;; ++n )
           if ( _get( src, endSrc, 1 ) )
             break;
 
@@ -134,7 +132,7 @@ BOOL LZHLDecompressor::decompress( BYTE* dst, size_t* dstSz, const BYTE* src, si
       int extra = _get( src, endSrc, item->nExtraBits );
 
       if ( extra < 0 ) {
-        return FALSE;
+        return false;
       }
 
       matchOver = item->base + extra;
@@ -143,7 +141,7 @@ BOOL LZHLDecompressor::decompress( BYTE* dst, size_t* dstSz, const BYTE* src, si
     int dispPrefix = _get( src, endSrc, 3 );
 
     if ( dispPrefix < 0 ) {
-      return FALSE;
+      return false;
     }
 
     static struct DispItem {
@@ -175,7 +173,7 @@ BOOL LZHLDecompressor::decompress( BYTE* dst, size_t* dstSz, const BYTE* src, si
     int got = _get( src, endSrc, nBits );
 
     if ( got < 0 ) {
-      return FALSE;
+      return false;
     }
 
     disp |= got;
@@ -185,7 +183,7 @@ BOOL LZHLDecompressor::decompress( BYTE* dst, size_t* dstSz, const BYTE* src, si
     int matchLen = matchOver + LZMIN;
 
     if ( dst + matchLen > endDst ) {
-      return FALSE;
+      return false;
     }
 
     int pos = bufPos - disp;
@@ -210,7 +208,5 @@ BOOL LZHLDecompressor::decompress( BYTE* dst, size_t* dstSz, const BYTE* src, si
   if ( srcSz )
     *srcSz = src - startSrc;
 
-  return TRUE;
+  return true;
 }
-
-#endif

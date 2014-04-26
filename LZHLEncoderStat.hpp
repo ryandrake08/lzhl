@@ -1,6 +1,9 @@
 #ifndef __J2K__LZH__LZHLEncoderStat_HPP__
 #define __J2K__LZH__LZHLEncoderStat_HPP__
 
+#include "HuffStat.hpp"
+#include "LZHMacro.hpp"
+
 class LZHLEncoderStat : public HuffStat {
 public:
   struct Symbol {

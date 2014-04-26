@@ -1,33 +1,9 @@
 #ifndef __J2K__LZH__LZHMacro_HPP__
 #define __J2K__LZH__LZHMacro_HPP__
 
-#ifndef BYTE
-  #define BYTE   unsigned char
-#endif
+#include <cstdint>
 
-#ifndef INT16
-  #define INT16  signed short
-#endif
-
-#ifndef INT32
-  #define INT32  signed long
-#endif
-
-#ifndef UINT16
-  #define UINT16 unsigned short
-#endif
-
-#ifndef UINT32
-  #define UINT32 unsigned long
-#endif
-
-#ifndef min
-  #define min( a, b ) ( (a) < (b) ? (a) : (b) )
-#endif
-
-#ifndef max
-  #define max( a, b ) ( (a) > (b) ? (a) : (b) )
-#endif
+#define min(a, b) (((a) < (b)) ? (a) : (b)) 
 
 #ifdef _MSC_VER
   #pragma intrinsic( memcpy, memset, _rotl )
@@ -65,17 +41,17 @@
 #define LZBUFSIZE (1<<(LZBUFBITS))
 
 /**************************************************************************/
-#define LZPOS UINT32
+#define LZPOS uint32_t
 #define LZBUFMASK ( (LZBUFSIZE) - 1 )
 
-#define LZTABLEINT UINT16
+#define LZTABLEINT uint16_t
 typedef LZTABLEINT LZTableItem;
 
-#define LZHASH UINT32
+#define LZHASH uint32_t
 /**************************************************************************/
 
-#define HUFFINT      INT16
-#define HUFFUINT     UINT16
+#define HUFFINT      int16_t
+#define HUFFUINT     uint16_t
 #define NHUFFSYMBOLS ( 256 + 16 + 2 )
 
 /**************************************************************************/

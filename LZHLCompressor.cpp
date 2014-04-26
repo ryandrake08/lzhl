@@ -1,13 +1,11 @@
-#ifndef __J2K__LZH__LZHLCompressor_CPP__
-#define __J2K__LZH__LZHLCompressor_CPP__
+#include "LZHLCompressor.hpp"
+#include <cassert>
 
-#include "Incs.h"
-
-inline LZHASH _calcHash( const BYTE* src ) 
+inline LZHASH _calcHash( const uint8_t* src ) 
 {
   LZHASH hash = 0;
-  const BYTE* pEnd = src + LZMATCH;
-  for( const BYTE* p = src; p < pEnd ; ) 
+  const uint8_t* pEnd = src + LZMATCH;
+  for( const uint8_t* p = src; p < pEnd ; ) 
   {
     UPDATE_HASH( hash, *p++ );
   }
@@ -25,7 +23,7 @@ LZHLCompressor::~LZHLCompressor() {
   delete [] table;
 }
 
-inline LZHASH LZHLCompressor::_updateTable( LZHASH hash, const BYTE* src, LZPOS pos, int len )
+inline LZHASH LZHLCompressor::_updateTable( LZHASH hash, const uint8_t* src, LZPOS pos, int len )
 {
   if ( len <= 0 )
     return 0;
@@ -33,9 +31,9 @@ inline LZHASH LZHLCompressor::_updateTable( LZHASH hash, const BYTE* src, LZPOS 
   if ( len > LZSKIPHASH ) {
     ++src;
     hash = 0;
-    const BYTE* pEnd = src + len + LZMATCH;
+    const uint8_t* pEnd = src + len + LZMATCH;
 
-    for ( const BYTE* p=src+len; p < pEnd ; ) {
+    for ( const uint8_t* p=src+len; p < pEnd ; ) {
       UPDATE_HASH( hash, *p++ );
     }
 
@@ -53,17 +51,17 @@ inline LZHASH LZHLCompressor::_updateTable( LZHASH hash, const BYTE* src, LZPOS 
   return hash;
 }
 
-size_t LZHLCompressor::compress( BYTE* dst, const BYTE* src, size_t sz ) {
+size_t LZHLCompressor::compress( uint8_t* dst, const uint8_t* src, size_t sz ) {
   LZHLEncoder coder( &stat, dst );
-  const BYTE* srcBegin = src;
-  const BYTE* srcEnd = src + sz;
+  const uint8_t* srcBegin = src;
+  const uint8_t* srcEnd = src + sz;
 
   LZHASH hash = 0;
 
   if ( sz >= LZMATCH ) {
-    const BYTE* pEnd = src + LZMATCH;
+    const uint8_t* pEnd = src + LZMATCH;
 
-    for ( const BYTE* p=src; p < pEnd ; ) {
+    for ( const uint8_t* p=src; p < pEnd ; ) {
        UPDATE_HASH( hash, *p++ );
     }
   }
@@ -89,7 +87,7 @@ size_t LZHLCompressor::compress( BYTE* dst, const BYTE* src, size_t sz ) {
      LZPOS  lazyMatchBufPos;
      int    lazyMatchNRaw;
      LZHASH lazyMatchHash;
-     BOOL   lazyForceMatch = FALSE;
+     bool   lazyForceMatch = false;
     #endif
      for (;;) {
        LZHASH hash2 = HASH_POS( hash );
@@ -109,7 +107,8 @@ size_t LZHLCompressor::compress( BYTE* dst, const BYTE* src, size_t sz ) {
            {
              assert( matchLen != 0 );
              int xtraMatchLimit = min( LZMIN + LZHLEncoder::maxMatchOver - matchLen, srcLeft - nRaw - matchLen );
-             for ( int xtraMatch = 0; xtraMatch < xtraMatchLimit ; ++xtraMatch )
+             int xtraMatch;
+             for ( xtraMatch = 0; xtraMatch < xtraMatchLimit ; ++xtraMatch )
                 {
                 if ( src[ nRaw + xtraMatch ] != src[ nRaw + xtraMatch + matchLen ] )
                 break;//for ( xtraMatch )
@@ -125,7 +124,8 @@ size_t LZHLCompressor::compress( BYTE* dst, const BYTE* src, size_t sz ) {
              int xtraMatchLimit = min( LZMIN + LZHLEncoder::maxMatchOver - matchLen, nRaw );
              int d = (int)_distance( bufPos - hashPos );
              xtraMatchLimit = min( min( xtraMatchLimit, d - matchLen ), LZBUFSIZE - d );
-             for ( int xtraMatch = 0; xtraMatch < xtraMatchLimit ; ++xtraMatch )
+             int xtraMatch;
+             for ( xtraMatch = 0; xtraMatch < xtraMatchLimit ; ++xtraMatch )
                 {
                 if ( buf[ _wrap( hashPos - xtraMatch - 1 ) ] != src[ nRaw - xtraMatch - 1 ] )
                   break;//for ( xtraMatch )
@@ -143,7 +143,7 @@ size_t LZHLCompressor::compress( BYTE* dst, const BYTE* src, size_t sz ) {
                    hash = _calcHash( src + nRaw );
 
                    #ifdef LZLAZYMATCH
-                     lazyForceMatch = TRUE;
+                     lazyForceMatch = true;
                    #endif
              }
            }
@@ -231,5 +231,3 @@ size_t LZHLCompressor::compress( BYTE* dst, const BYTE* src, size_t sz ) {
 
     return coder.flush();
     }
-
-#endif

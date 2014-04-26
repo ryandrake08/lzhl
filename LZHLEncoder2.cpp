@@ -1,7 +1,5 @@
-#ifndef __J2K__LZH__LZHLEncoder2_CPP__
-#define __J2K__LZH__LZHLEncoder2_CPP__
-
-#include "Incs.h"
+#include "LZHLEncoder.hpp"
+#include <cassert>
 
 void LZHLEncoder::_callStat() {
   nextStat = 2;   // to avoid recursion, >=2
@@ -22,19 +20,19 @@ void LZHLEncoder::_callStat() {
   }
 }
 
-void LZHLEncoder::putRaw( const BYTE* src, size_t sz ) {
-  for( const BYTE* srcEnd = src + sz; src < srcEnd ; ++src ) {
+void LZHLEncoder::putRaw( const uint8_t* src, size_t sz ) {
+  for( const uint8_t* srcEnd = src + sz; src < srcEnd ; ++src ) {
      _put( *src );
   }
 }
 
-void LZHLEncoder::putMatch( const BYTE* src, size_t nRaw, size_t matchOver, size_t disp )
+void LZHLEncoder::putMatch( const uint8_t* src, size_t nRaw, size_t matchOver, size_t disp )
 {
   assert( nRaw <= maxRaw );
   assert( matchOver <= maxMatchOver );
   assert( disp >= 0 && disp < LZBUFSIZE );
   putRaw( src, nRaw );
-  struct MatchOverItem { int symbol; int nBits; UINT16 bits; };
+  struct MatchOverItem { int symbol; int nBits; uint16_t bits; };
 
   static MatchOverItem _matchOverTable[] = {
     { 264, 1, 0x00 },
@@ -72,7 +70,7 @@ void LZHLEncoder::putMatch( const BYTE* src, size_t nRaw, size_t matchOver, size
     _putBits( item->nBits + 4, ( item->bits << 4 ) | (matchOver & 0x1F) );
   }
 
-  static struct DispItem { int nBits; UINT16 bits; } _dispTable[] = {
+  static struct DispItem { int nBits; uint16_t bits; } _dispTable[] = {
     #include "Table/hdisp.tbl"
   };
 
@@ -82,7 +80,7 @@ void LZHLEncoder::putMatch( const BYTE* src, size_t nRaw, size_t matchOver, size
 
   DispItem* item = &_dispTable[ disp >> (LZBUFBITS - 7) ];
   int nBits = item->nBits + (LZBUFBITS - 7);
-  UINT32 bits = ( ((UINT32)item->bits) << (LZBUFBITS - 7) ) | ( disp & ( ( 1 << (LZBUFBITS - 7) ) - 1 ) );
+  uint32_t bits = ( ((uint32_t)item->bits) << (LZBUFBITS - 7) ) | ( disp & ( ( 1 << (LZBUFBITS - 7) ) - 1 ) );
 
   #if LZBUFBITS >= 15
     if ( nBits > 16 ) {
@@ -103,12 +101,10 @@ size_t LZHLEncoder::flush() {
  _put( NHUFFSYMBOLS - 1 );
 
  while( nBits > 0 ) {
-   *dst++ = (BYTE)( bits >> 24 );
+   *dst++ = (uint8_t)( bits >> 24 );
    nBits -= 8;
    bits <<= 8;
  }
 
  return dst - dstBegin;
 }
-
-#endif

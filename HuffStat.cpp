@@ -1,7 +1,5 @@
-#ifndef __J2K__LZH__HuffStat_CPP__
-#define __J2K__LZH__HuffStat_CPP__
-
-#include "Incs.h"
+#include "HuffStat.hpp"
+#include <cstring>
 
 HuffStat::HuffStat() 
 {
@@ -28,5 +26,3 @@ int HuffStat::makeSortedTmp( HuffStatTmpStruct* s )
   shellSort( s - 1, NHUFFSYMBOLS );
   return total;
 }
-
-#endif

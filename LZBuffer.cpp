@@ -1,11 +1,10 @@
-#ifndef __J2K__LZH__LZBuffer_CPP__
-#define __J2K__LZH__LZBuffer_CPP__
-
-#include "Incs.h"
+#include "LZBuffer.hpp"
+#include <cassert>
+#include <cstring>
 
 LZBuffer::LZBuffer() 
 {
-  buf = new BYTE[ LZBUFSIZE ];
+  buf = new uint8_t[ LZBUFSIZE ];
   bufPos = 0;
 }
 
@@ -24,12 +23,12 @@ int LZBuffer::_distance( int diff )
   return ( diff & LZBUFMASK );
 }
 
-void LZBuffer::_toBuf( BYTE c ) 
+void LZBuffer::_toBuf( uint8_t c ) 
 {
   buf[ _wrap( bufPos++ ) ] = c;
 }
 
-void LZBuffer::_toBuf( const BYTE* src, size_t sz ) 
+void LZBuffer::_toBuf( const uint8_t* src, size_t sz ) 
 {
   assert( sz < LZBUFSIZE );
   int begin = _wrap( bufPos );
@@ -49,7 +48,7 @@ void LZBuffer::_toBuf( const BYTE* src, size_t sz )
   bufPos += sz;
 }
 
-void LZBuffer::_bufCpy( BYTE* dst, int pos, size_t sz ) 
+void LZBuffer::_bufCpy( uint8_t* dst, int pos, size_t sz ) 
 {
   assert( sz < LZBUFSIZE );
   int begin = _wrap( pos );
@@ -67,7 +66,7 @@ void LZBuffer::_bufCpy( BYTE* dst, int pos, size_t sz )
   }
 }
 
-int LZBuffer::_nMatch( int pos, const BYTE* p, int nLimit ) 
+int LZBuffer::_nMatch( int pos, const uint8_t* p, int nLimit ) 
 {
   assert( nLimit < LZBUFSIZE );
   int begin = pos;
@@ -89,12 +88,10 @@ int LZBuffer::_nMatch( int pos, const BYTE* p, int nLimit )
      int shift = LZBUFSIZE - begin;
      int n = nLimit - shift;
 
-     for( i = 0; i < n ; i++ )
+     for( int i = 0; i < n ; i++ )
        if( buf[ i ] != p[ shift + i ] )
           return shift + i;
 
      return nLimit;
    }
 }
-
-#endif

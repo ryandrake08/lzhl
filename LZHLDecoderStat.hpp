@@ -1,7 +1,8 @@
 #ifndef __J2K__LZH__LZHLDecoderStat_HPP__
 #define __J2K__LZH__LZHLDecoderStat_HPP__
 
-#include "Incs.h"
+#include "HuffStat.hpp"
+#include "LZHMacro.hpp"
 
 class LZHLDecoderStat : public HuffStat {
 public:

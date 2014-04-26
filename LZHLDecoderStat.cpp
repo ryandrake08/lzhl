@@ -1,7 +1,5 @@
-#ifndef __J2K__LZH__LZHLDecoderStat_CPP__
-#define __J2K__LZH__LZHLDecoderStat_CPP__
-
-#include "Incs.h"
+#include "LZHLDecoderStat.hpp"
+#include <cstring>
 
 LZHLDecoderStat::LZHLDecoderStat() {
   symbolTable = new HUFFINT[ NHUFFSYMBOLS ];
@@ -20,5 +18,3 @@ LZHLDecoderStat::Group LZHLDecoderStat::groupTable0[ 16 ] =  {
 HUFFINT LZHLDecoderStat::symbolTable0[ NHUFFSYMBOLS ] =  {
   #include "Table/hdec_s.tbl"
 };
-
-#endif

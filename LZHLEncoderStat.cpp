@@ -1,7 +1,6 @@
-#ifndef __J2K__LZH__LZHLEncoderStat_CPP__
-#define __J2K__LZH__LZHLEncoderStat_CPP__
-
-#include "Incs.h"
+#include "LZHLEncoderStat.hpp"
+#include <cstring>
+#include <cassert>
 
 LZHLEncoderStat::LZHLEncoderStat() 
 {
@@ -24,7 +23,8 @@ inline void LZHLEncoderStat::_addGroup( int* groups, int group, int nBits )
   assert( nBits <= 8 );
 
   //Bubble sort
-  for( int j=group; j > 0 && nBits < groups[ j - 1 ] ; --j )
+  int j;
+  for( j=group; j > 0 && nBits < groups[ j - 1 ] ; --j )
       groups[ j ] = groups[ j - 1 ];
 
   groups[ j ] = nBits;
@@ -96,7 +96,8 @@ void LZHLEncoderStat::calcStat( int* groups )
 
     int nItems15 = NHUFFSYMBOLS - ( pos + i );
 
-    for ( int nBits15=0 ;; ++nBits15 )
+    int nBits15;
+    for ( nBits15=0 ;; ++nBits15 )
       if ( 1 << nBits15 >= nItems15 )
         break;
         
@@ -122,7 +123,7 @@ void LZHLEncoderStat::calcStat( int* groups )
 
   pos = 0;
 
-  for ( j=0; j < 16 ; ++j ) {
+  for ( int j=0; j < 16 ; ++j ) {
     int nBits = groups[ j ];
     int nItems = 1 << nBits;
     int maxK = min( nItems, NHUFFSYMBOLS - pos );
@@ -136,5 +137,3 @@ void LZHLEncoderStat::calcStat( int* groups )
     pos += 1 << nBits;
   }
 }
-
-#endif

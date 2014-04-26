@@ -1,9 +1,7 @@
-#ifndef __J2K__LZH__LZHLEncoder_CPP__
-#define __J2K__LZH__LZHLEncoder_CPP__
+#include "LZHLEncoder.hpp"
+#include <cassert>
 
-#include "Incs.h"
-
-LZHLEncoder::LZHLEncoder( LZHLEncoderStat* stat_, BYTE* dst_ )
+LZHLEncoder::LZHLEncoder( LZHLEncoderStat* stat_, uint8_t* dst_ )
   : stat( stat_ ),
     sstat( stat_->stat ),
     nextStat( stat_->nextStat ),
@@ -15,21 +13,21 @@ LZHLEncoder::LZHLEncoder( LZHLEncoderStat* stat_, BYTE* dst_ )
 
 LZHLEncoder::~LZHLEncoder() { }
 
-void LZHLEncoder::_putBits( int codeBits, UINT32 code ) {
+void LZHLEncoder::_putBits( int codeBits, uint32_t code ) {
   assert( codeBits <= 16 );
   bits |= ( code << ( 32 - nBits - codeBits ) );
   nBits += codeBits;
 
   if ( nBits >= 16 ) {
-    *dst++ = (BYTE)( bits >> 24 );
-    *dst++ = (BYTE)( bits >> 16 );
+    *dst++ = (uint8_t)( bits >> 24 );
+    *dst++ = (uint8_t)( bits >> 16 );
 
     nBits -= 16;
     bits <<= 16;
   }
 }
 
-void LZHLEncoder::_put( UINT16 symbol ) {
+void LZHLEncoder::_put( uint16_t symbol ) {
   assert( symbol < NHUFFSYMBOLS );
 
   if ( --nextStat <= 0 ) {
@@ -44,7 +42,7 @@ void LZHLEncoder::_put( UINT16 symbol ) {
   _putBits( item->nBits, item->code );
 }
 
-void LZHLEncoder::_put( UINT16 symbol, int codeBits, UINT32 code ) {
+void LZHLEncoder::_put( uint16_t symbol, int codeBits, uint32_t code ) {
   assert( symbol < NHUFFSYMBOLS );
   assert( codeBits <= 4 );
 
@@ -60,5 +58,3 @@ void LZHLEncoder::_put( UINT16 symbol, int codeBits, UINT32 code ) {
   int nBits = item->nBits;
   _putBits( nBits + codeBits, ( item->code << codeBits ) | code );
 }
-
-#endif

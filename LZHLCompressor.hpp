@@ -1,7 +1,10 @@
 #ifndef __J2K__LZH__LZHLCompressor_HPP__
 #define __J2K__LZH__LZHLCompressor_HPP__
 
-#include "Incs.h"
+#include "LZBuffer.hpp"
+#include "LZHLEncoder.hpp"
+#include "LZHLEncoderStat.hpp"
+#include "LZHMacro.hpp"
 
 class LZHLCompressor : private LZBuffer {
 public:
@@ -13,11 +16,11 @@ public:
     return LZHLEncoder::calcMaxBuf( rawSz );
   }
 
-  size_t compress( BYTE* dst, const BYTE* src, size_t sz );
+  size_t compress( uint8_t* dst, const uint8_t* src, size_t sz );
 
 private:
   void _wrapTable();
-  LZHASH _updateTable( LZHASH hash, const BYTE* src, LZPOS pos, int len );
+  LZHASH _updateTable( LZHASH hash, const uint8_t* src, LZPOS pos, int len );
 
 private:
   LZHLEncoderStat stat;
