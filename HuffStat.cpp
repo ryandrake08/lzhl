@@ -1,18 +1,18 @@
 #include "HuffStat.hpp"
 #include <cstring>
 
-HuffStat::HuffStat() 
+HuffStat::HuffStat()
 {
   stat = new HUFFINT[ NHUFFSYMBOLS ];
   memset( stat, 0, sizeof(HUFFINT) * NHUFFSYMBOLS );
 }
 
-HuffStat::~HuffStat() 
+HuffStat::~HuffStat()
 {
   delete [] stat;
 }
 
-int HuffStat::makeSortedTmp( HuffStatTmpStruct* s ) 
+int HuffStat::makeSortedTmp( HuffStatTmpStruct* s )
 {
   int total = 0;
   for( int j = 0; j < NHUFFSYMBOLS ; j++ ) {

@@ -1,11 +1,11 @@
 #include "LZHLCompressor.hpp"
 #include <cassert>
 
-inline LZHASH _calcHash( const uint8_t* src ) 
+inline LZHASH _calcHash( const uint8_t* src )
 {
   LZHASH hash = 0;
   const uint8_t* pEnd = src + LZMATCH;
-  for( const uint8_t* p = src; p < pEnd ; ) 
+  for( const uint8_t* p = src; p < pEnd ; )
   {
     UPDATE_HASH( hash, *p++ );
   }
@@ -44,8 +44,8 @@ inline LZHASH LZHLCompressor::_updateTable( LZHASH hash, const uint8_t* src, LZP
   ++src;
 
   for ( int i=0; i < len ; ++i ) {
-     table[ HASH_POS( hash ) ] = (LZTableItem)_wrap( pos + i );
-     UPDATE_HASH_EX( hash, src + i );
+    table[ HASH_POS( hash ) ] = (LZTableItem)_wrap( pos + i );
+    UPDATE_HASH_EX( hash, src + i );
   }
 
   return hash;
@@ -62,7 +62,7 @@ size_t LZHLCompressor::compress( uint8_t* dst, const uint8_t* src, size_t sz ) {
     const uint8_t* pEnd = src + LZMATCH;
 
     for ( const uint8_t* p=src; p < pEnd ; ) {
-       UPDATE_HASH( hash, *p++ );
+      UPDATE_HASH( hash, *p++ );
     }
   }
 
@@ -81,153 +81,153 @@ size_t LZHLCompressor::compress( uint8_t* dst, const uint8_t* src, size_t sz ) {
     int nRaw = 0;
     int maxRaw = min( srcLeft - LZMATCH, LZHLEncoder::maxRaw );
 
-    #ifdef LZLAZYMATCH
-     int    lazyMatchLen = 0;
-     int    lazyMatchHashPos;
-     LZPOS  lazyMatchBufPos;
-     int    lazyMatchNRaw;
-     LZHASH lazyMatchHash;
-     bool   lazyForceMatch = false;
-    #endif
-     for (;;) {
-       LZHASH hash2 = HASH_POS( hash );
+#ifdef LZLAZYMATCH
+    int    lazyMatchLen = 0;
+    int    lazyMatchHashPos;
+    LZPOS  lazyMatchBufPos;
+    int    lazyMatchNRaw;
+    LZHASH lazyMatchHash;
+    bool   lazyForceMatch = false;
+#endif
+    for (;;) {
+      LZHASH hash2 = HASH_POS( hash );
 
-       int hashPos = table[ hash2 ];
-       int wrapBufPos = _wrap( bufPos );
-       table[ hash2 ] = (LZTableItem)wrapBufPos;
+      int hashPos = table[ hash2 ];
+      int wrapBufPos = _wrap( bufPos );
+      table[ hash2 ] = (LZTableItem)wrapBufPos;
 
-       int matchLen = 0;
-       if ( hashPos != (LZTABLEINT)(-1) && hashPos != wrapBufPos )
-       {
-         int matchLimit = min( min( _distance( wrapBufPos - hashPos ), srcLeft - nRaw ), LZMIN + LZHLEncoder::maxMatchOver );
-         matchLen = _nMatch( hashPos, src + nRaw, matchLimit );
+      int matchLen = 0;
+      if ( hashPos != (LZTABLEINT)(-1) && hashPos != wrapBufPos )
+      {
+        int matchLimit = min( min( _distance( wrapBufPos - hashPos ), srcLeft - nRaw ), LZMIN + LZHLEncoder::maxMatchOver );
+        matchLen = _nMatch( hashPos, src + nRaw, matchLimit );
 
-         #ifdef LZOVERLAP
-           if ( _wrap( hashPos + matchLen ) == wrapBufPos )
-           {
-             assert( matchLen != 0 );
-             int xtraMatchLimit = min( LZMIN + LZHLEncoder::maxMatchOver - matchLen, srcLeft - nRaw - matchLen );
-             int xtraMatch;
-             for ( xtraMatch = 0; xtraMatch < xtraMatchLimit ; ++xtraMatch )
-                {
-                if ( src[ nRaw + xtraMatch ] != src[ nRaw + xtraMatch + matchLen ] )
-                break;//for ( xtraMatch )
-                }
+#ifdef LZOVERLAP
+        if ( _wrap( hashPos + matchLen ) == wrapBufPos )
+        {
+          assert( matchLen != 0 );
+          int xtraMatchLimit = min( LZMIN + LZHLEncoder::maxMatchOver - matchLen, srcLeft - nRaw - matchLen );
+          int xtraMatch;
+          for ( xtraMatch = 0; xtraMatch < xtraMatchLimit ; ++xtraMatch )
+          {
+            if ( src[ nRaw + xtraMatch ] != src[ nRaw + xtraMatch + matchLen ] )
+              break;//for ( xtraMatch )
+          }
 
-             matchLen += xtraMatch;
-           }
-         #endif
+          matchLen += xtraMatch;
+        }
+#endif
 
-         #ifdef LZBACKWARDMATCH
-           if ( matchLen >= LZMIN - 1 )//to ensure that buf will be overwritten
-             {
-             int xtraMatchLimit = min( LZMIN + LZHLEncoder::maxMatchOver - matchLen, nRaw );
-             int d = (int)_distance( bufPos - hashPos );
-             xtraMatchLimit = min( min( xtraMatchLimit, d - matchLen ), LZBUFSIZE - d );
-             int xtraMatch;
-             for ( xtraMatch = 0; xtraMatch < xtraMatchLimit ; ++xtraMatch )
-                {
-                if ( buf[ _wrap( hashPos - xtraMatch - 1 ) ] != src[ nRaw - xtraMatch - 1 ] )
-                  break;//for ( xtraMatch )
-                }
+#ifdef LZBACKWARDMATCH
+        if ( matchLen >= LZMIN - 1 )//to ensure that buf will be overwritten
+        {
+          int xtraMatchLimit = min( LZMIN + LZHLEncoder::maxMatchOver - matchLen, nRaw );
+          int d = (int)_distance( bufPos - hashPos );
+          xtraMatchLimit = min( min( xtraMatchLimit, d - matchLen ), LZBUFSIZE - d );
+          int xtraMatch;
+          for ( xtraMatch = 0; xtraMatch < xtraMatchLimit ; ++xtraMatch )
+          {
+            if ( buf[ _wrap( hashPos - xtraMatch - 1 ) ] != src[ nRaw - xtraMatch - 1 ] )
+              break;//for ( xtraMatch )
+          }
 
-             if ( xtraMatch > 0 ) {
-                   assert( matchLen + xtraMatch >= LZMIN );
-                   assert( matchLen + xtraMatch <= _distance( bufPos - hashPos ) );
+          if ( xtraMatch > 0 ) {
+            assert( matchLen + xtraMatch >= LZMIN );
+            assert( matchLen + xtraMatch <= _distance( bufPos - hashPos ) );
 
-                   nRaw -= xtraMatch;
-                   bufPos -= xtraMatch;
-                   hashPos -= xtraMatch;
-                   matchLen += xtraMatch;
-                   wrapBufPos = _wrap( bufPos );
-                   hash = _calcHash( src + nRaw );
+            nRaw -= xtraMatch;
+            bufPos -= xtraMatch;
+            hashPos -= xtraMatch;
+            matchLen += xtraMatch;
+            wrapBufPos = _wrap( bufPos );
+            hash = _calcHash( src + nRaw );
 
-                   #ifdef LZLAZYMATCH
-                     lazyForceMatch = true;
-                   #endif
-             }
-           }
-         #endif
-      }
-
-      #ifdef LZLAZYMATCH
-        if ( lazyMatchLen >= LZMIN ) {
-          if ( matchLen > lazyMatchLen ) {
-            coder.putMatch( src, nRaw, matchLen - LZMIN, _distance( wrapBufPos - hashPos ) );
-            hash = _updateTable( hash, src + nRaw, bufPos + 1, min( matchLen - 1, srcEnd - (src + nRaw + 1) ) );
-            _toBuf( src + nRaw, matchLen );
-            src += nRaw + matchLen;
-            break;//for ( nRaw )
-
-          } else {
-            nRaw = lazyMatchNRaw;
-            bufPos = lazyMatchBufPos;
-
-            hash = lazyMatchHash;
-            UPDATE_HASH_EX( hash, src + nRaw );
-            coder.putMatch( src, nRaw, lazyMatchLen - LZMIN, _distance( bufPos - lazyMatchHashPos ) );
-            hash = _updateTable( hash, src + nRaw + 1, bufPos + 2, min( lazyMatchLen - 2, srcEnd - (src + nRaw + 2) ) );
-            _toBuf( src + nRaw, lazyMatchLen );
-            src += nRaw + lazyMatchLen;
-
-            break;//for ( nRaw )
+#ifdef LZLAZYMATCH
+            lazyForceMatch = true;
+#endif
           }
         }
-      #endif
+#endif
+      }
+
+#ifdef LZLAZYMATCH
+      if ( lazyMatchLen >= LZMIN ) {
+        if ( matchLen > lazyMatchLen ) {
+          coder.putMatch( src, nRaw, matchLen - LZMIN, _distance( wrapBufPos - hashPos ) );
+          hash = _updateTable( hash, src + nRaw, bufPos + 1, min( matchLen - 1, srcEnd - (src + nRaw + 1) ) );
+          _toBuf( src + nRaw, matchLen );
+          src += nRaw + matchLen;
+          break;//for ( nRaw )
+
+        } else {
+          nRaw = lazyMatchNRaw;
+          bufPos = lazyMatchBufPos;
+
+          hash = lazyMatchHash;
+          UPDATE_HASH_EX( hash, src + nRaw );
+          coder.putMatch( src, nRaw, lazyMatchLen - LZMIN, _distance( bufPos - lazyMatchHashPos ) );
+          hash = _updateTable( hash, src + nRaw + 1, bufPos + 2, min( lazyMatchLen - 2, srcEnd - (src + nRaw + 2) ) );
+          _toBuf( src + nRaw, lazyMatchLen );
+          src += nRaw + lazyMatchLen;
+
+          break;//for ( nRaw )
+        }
+      }
+#endif
 
       if ( matchLen >= LZMIN ) {
 
-        #ifdef LZLAZYMATCH
-          if ( !lazyForceMatch ) {
-             lazyMatchLen = matchLen;
-             lazyMatchHashPos = hashPos;
-             lazyMatchNRaw = nRaw;
-             lazyMatchBufPos = bufPos;
-             lazyMatchHash = hash;
-           } else
-         #endif
-           {
-             coder.putMatch( src, nRaw, matchLen - LZMIN, _distance( wrapBufPos - hashPos ) );
-             hash = _updateTable( hash, src + nRaw, bufPos + 1, min( matchLen - 1, srcEnd - (src + nRaw + 1) ) );
-             _toBuf( src + nRaw, matchLen );
-             src += nRaw + matchLen;
-    
-             break;//for ( nRaw )
-           }
-         }
+#ifdef LZLAZYMATCH
+        if ( !lazyForceMatch ) {
+          lazyMatchLen = matchLen;
+          lazyMatchHashPos = hashPos;
+          lazyMatchNRaw = nRaw;
+          lazyMatchBufPos = bufPos;
+          lazyMatchHash = hash;
+        } else
+#endif
+        {
+          coder.putMatch( src, nRaw, matchLen - LZMIN, _distance( wrapBufPos - hashPos ) );
+          hash = _updateTable( hash, src + nRaw, bufPos + 1, min( matchLen - 1, srcEnd - (src + nRaw + 1) ) );
+          _toBuf( src + nRaw, matchLen );
+          src += nRaw + matchLen;
 
-            #ifdef LZLAZYMATCH
-            assert( !lazyForceMatch );
-            #endif
+          break;//for ( nRaw )
+        }
+      }
 
-            if ( nRaw + 1 > maxRaw )
-                {
-                #ifdef LZLAZYMATCH
-                if ( lazyMatchLen >= LZMIN )
-                    {
-                    coder.putMatch( src, nRaw, lazyMatchLen - LZMIN, _distance( bufPos - lazyMatchHashPos ) );
-                    hash = _updateTable( hash, src + nRaw, bufPos + 1, min( lazyMatchLen - 1, srcEnd - (src + nRaw + 1) ) );
-                    _toBuf( src + nRaw, lazyMatchLen );
-                    src += nRaw + lazyMatchLen;
-                    break;//for ( nRaw )
-                    }
-                #endif
+#ifdef LZLAZYMATCH
+      assert( !lazyForceMatch );
+#endif
 
-               if ( nRaw + LZMATCH >= srcLeft && srcLeft <= LZHLEncoder::maxRaw )
-                 {
-                   _toBuf( src + nRaw, srcLeft - nRaw );
-                   nRaw = srcLeft;
-                 }
+      if ( nRaw + 1 > maxRaw )
+      {
+#ifdef LZLAZYMATCH
+        if ( lazyMatchLen >= LZMIN )
+        {
+          coder.putMatch( src, nRaw, lazyMatchLen - LZMIN, _distance( bufPos - lazyMatchHashPos ) );
+          hash = _updateTable( hash, src + nRaw, bufPos + 1, min( lazyMatchLen - 1, srcEnd - (src + nRaw + 1) ) );
+          _toBuf( src + nRaw, lazyMatchLen );
+          src += nRaw + lazyMatchLen;
+          break;//for ( nRaw )
+        }
+#endif
 
-               coder.putRaw( src, nRaw );
-               src += nRaw;
-               break;//for ( nRaw )
-              }
+        if ( nRaw + LZMATCH >= srcLeft && srcLeft <= LZHLEncoder::maxRaw )
+        {
+          _toBuf( src + nRaw, srcLeft - nRaw );
+          nRaw = srcLeft;
+        }
 
-            UPDATE_HASH_EX( hash, src + nRaw );
-            _toBuf( src[ nRaw++ ] );
-            }//for ( nRaw )
-        }//forever
+        coder.putRaw( src, nRaw );
+        src += nRaw;
+        break;//for ( nRaw )
+      }
 
-    return coder.flush();
-    }
+      UPDATE_HASH_EX( hash, src + nRaw );
+      _toBuf( src[ nRaw++ ] );
+    }//for ( nRaw )
+  }//forever
+
+  return coder.flush();
+}

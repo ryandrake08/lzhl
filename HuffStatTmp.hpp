@@ -3,7 +3,7 @@
 
 #include "LZHMacro.hpp"
 
-class HuffStatTmpStruct 
+class HuffStatTmpStruct
 {
 public:
   HUFFINT i;

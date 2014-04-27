@@ -22,7 +22,7 @@ void LZHLEncoder::_callStat() {
 
 void LZHLEncoder::putRaw( const uint8_t* src, size_t sz ) {
   for( const uint8_t* srcEnd = src + sz; src < srcEnd ; ++src ) {
-     _put( *src );
+    _put( *src );
   }
 }
 
@@ -71,40 +71,40 @@ void LZHLEncoder::putMatch( const uint8_t* src, size_t nRaw, size_t matchOver, s
   }
 
   static struct DispItem { int nBits; uint16_t bits; } _dispTable[] = {
-    #include "Table/hdisp.tbl"
+#include "Table/hdisp.tbl"
   };
 
-  #if LZBUFBITS < 8
-    #error
-  #endif
+#if LZBUFBITS < 8
+#error
+#endif
 
   DispItem* item = &_dispTable[ disp >> (LZBUFBITS - 7) ];
   int nBits = item->nBits + (LZBUFBITS - 7);
   uint32_t bits = ( ((uint32_t)item->bits) << (LZBUFBITS - 7) ) | ( disp & ( ( 1 << (LZBUFBITS - 7) ) - 1 ) );
 
-  #if LZBUFBITS >= 15
-    if ( nBits > 16 ) {
-      assert( nBits <= 32 );
-      _putBits( nBits - 16, bits >> 16 );
-      _putBits( 16, bits & 0xFFFF );
+#if LZBUFBITS >= 15
+  if ( nBits > 16 ) {
+    assert( nBits <= 32 );
+    _putBits( nBits - 16, bits >> 16 );
+    _putBits( 16, bits & 0xFFFF );
 
-    } else
-  #endif
+  } else
+#endif
 
-    {
-      assert( nBits <= 16 );
-      _putBits( nBits, bits );
-    }
+  {
+    assert( nBits <= 16 );
+    _putBits( nBits, bits );
+  }
 }
 
 size_t LZHLEncoder::flush() {
- _put( NHUFFSYMBOLS - 1 );
+  _put( NHUFFSYMBOLS - 1 );
 
- while( nBits > 0 ) {
-   *dst++ = (uint8_t)( bits >> 24 );
-   nBits -= 8;
-   bits <<= 8;
- }
+  while( nBits > 0 ) {
+    *dst++ = (uint8_t)( bits >> 24 );
+    nBits -= 8;
+    bits <<= 8;
+  }
 
- return dst - dstBegin;
+  return dst - dstBegin;
 }

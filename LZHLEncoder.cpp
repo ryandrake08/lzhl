@@ -2,13 +2,13 @@
 #include <cassert>
 
 LZHLEncoder::LZHLEncoder( LZHLEncoderStat* stat_, uint8_t* dst_ )
-  : stat( stat_ ),
-    sstat( stat_->stat ),
-    nextStat( stat_->nextStat ),
-    dst( dst_ ),
-    dstBegin( dst_ ),
-    bits( 0 ),
-    nBits( 0 )
+: stat( stat_ ),
+  sstat( stat_->stat ),
+  nextStat( stat_->nextStat ),
+  dst( dst_ ),
+  dstBegin( dst_ ),
+  bits( 0 ),
+  nBits( 0 )
 { }
 
 LZHLEncoder::~LZHLEncoder() { }

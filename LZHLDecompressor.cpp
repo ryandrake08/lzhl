@@ -109,7 +109,7 @@ bool LZHLDecompressor::decompress( uint8_t* dst, size_t* dstSz, const uint8_t* s
 
 
     } else if ( symbol == NHUFFSYMBOLS - 1 )
-       break;    //forever
+      break;    //forever
 
     static struct MatchOverItem {
       int nExtraBits;
@@ -145,17 +145,17 @@ bool LZHLDecompressor::decompress( uint8_t* dst, size_t* dstSz, const uint8_t* s
     }
 
     static struct DispItem {
-       int nBits;
-       int disp;
+      int nBits;
+      int disp;
     } _dispTable[] = {
-       { 0,  0 },
-       { 0,  1 },
-       { 1,  2 },
-       { 2,  4 },
-       { 3,  8 },
-       { 4, 16 },
-       { 5, 32 },
-       { 6, 64 }
+      { 0,  0 },
+      { 0,  1 },
+      { 1,  2 },
+      { 2,  4 },
+      { 3,  8 },
+      { 4, 16 },
+      { 5, 32 },
+      { 6, 64 }
     };
 
     DispItem* item = &_dispTable[ dispPrefix ];
@@ -193,7 +193,7 @@ bool LZHLDecompressor::decompress( uint8_t* dst, size_t* dstSz, const uint8_t* s
       _bufCpy( dst, pos, disp );
 
       for ( int i=0; i < matchLen - disp; ++i ) {
-         dst[ i + disp ] = dst[ i ];
+        dst[ i + disp ] = dst[ i ];
       }
     }
 

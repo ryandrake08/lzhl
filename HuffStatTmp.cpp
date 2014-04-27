@@ -25,26 +25,26 @@ void shellSort( HuffStatTmpStruct* a, int N ) {
   HuffStatTmpStruct v;
 
   /*
-    for ( int h = 1; h <= N/9; h = ( 3 * h + 1 ) )// determine the value for h
-    ;
-  */
+     for ( int h = 1; h <= N/9; h = ( 3 * h + 1 ) )// determine the value for h
+     ;
+   */
 
   assert( 13 <= N / 9 );
-  assert( 40 > N / 9 ); 
+  assert( 40 > N / 9 );
 
   int h = 40;
 
   for ( ; h > 0; h /= 3 ) {       // h = 40, 13, 4, 1
     for ( i = h + 1; i <= N; ++i ) {
-       v = a[i];
-       j = i;
+      v = a[i];
+      j = i;
 
-       while ( ( j > h ) && ( v < a[j - h] ) ) {
-          a[j] = a[j-h];
-          j -= h;
-       }
+      while ( ( j > h ) && ( v < a[j - h] ) ) {
+        a[j] = a[j-h];
+        j -= h;
+      }
 
-       a[j] = v;
+      a[j] = v;
     }
   }
 }

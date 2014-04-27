@@ -23,7 +23,7 @@ private:
 
 public:
   static size_t calcMaxBuf( size_t rawSz ) {
-     return rawSz + ( rawSz >> 1 ) + 32;
+    return rawSz + ( rawSz >> 1 ) + 32;
   }
 
 public:

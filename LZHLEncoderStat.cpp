@@ -2,20 +2,20 @@
 #include <cstring>
 #include <cassert>
 
-LZHLEncoderStat::LZHLEncoderStat() 
+LZHLEncoderStat::LZHLEncoderStat()
 {
   nextStat = HUFFRECALCLEN;
   symbolTable = new Symbol[ NHUFFSYMBOLS ];
   memcpy( symbolTable, symbolTable0, sizeof(Symbol)*NHUFFSYMBOLS );
 }
 
-LZHLEncoderStat::~LZHLEncoderStat() 
+LZHLEncoderStat::~LZHLEncoderStat()
 {
   delete [] symbolTable;
 }
 
 LZHLEncoderStat::Symbol LZHLEncoderStat::symbolTable0[ NHUFFSYMBOLS ] =  {
-   #include "Table/henc.tbl"
+#include "Table/henc.tbl"
 };
 
 inline void LZHLEncoderStat::_addGroup( int* groups, int group, int nBits )
@@ -25,12 +25,12 @@ inline void LZHLEncoderStat::_addGroup( int* groups, int group, int nBits )
   //Bubble sort
   int j;
   for( j=group; j > 0 && nBits < groups[ j - 1 ] ; --j )
-      groups[ j ] = groups[ j - 1 ];
+    groups[ j ] = groups[ j - 1 ];
 
   groups[ j ] = nBits;
 }
 
-void LZHLEncoderStat::calcStat( int* groups ) 
+void LZHLEncoderStat::calcStat( int* groups )
 {
   HuffStatTmpStruct s[ NHUFFSYMBOLS ];
   int total = makeSortedTmp( s );
@@ -40,17 +40,17 @@ void LZHLEncoderStat::calcStat( int* groups )
   int pos = 0;
   int nTotal = 0;
 
-  for ( int group=0; group < 14 ; ++group ) 
+  for ( int group=0; group < 14 ; ++group )
   {
     int avgGroup = ( total - nTotal )/( 16 - group );
     int i = 0, n = 0, nn = 0;
 
-    for ( int nBits=0 ;; ++nBits ) 
+    for ( int nBits=0 ;; ++nBits )
     {
       int over = 0;
       int nItems = 1 << nBits;
 
-      if ( pos + i + nItems > NHUFFSYMBOLS ) 
+      if ( pos + i + nItems > NHUFFSYMBOLS )
       {
         nItems = NHUFFSYMBOLS - pos;
         over = 1;
@@ -59,7 +59,7 @@ void LZHLEncoderStat::calcStat( int* groups )
       for ( ; i < nItems ; ++i )
         nn += s[ pos + i ].n;
 
-      if ( over || nBits >= 8 || nn > avgGroup ) 
+      if ( over || nBits >= 8 || nn > avgGroup )
       {
         if ( nBits == 0 || abs( n - avgGroup ) > abs( nn - avgGroup ) ) {
           n = nn;
@@ -100,7 +100,7 @@ void LZHLEncoderStat::calcStat( int* groups )
     for ( nBits15=0 ;; ++nBits15 )
       if ( 1 << nBits15 >= nItems15 )
         break;
-        
+
     assert( left >= nn );
 
     if ( nBits <= 8 && nBits15 <= 8 ) {
