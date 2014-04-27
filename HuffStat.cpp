@@ -15,7 +15,7 @@ HuffStat::~HuffStat()
 int HuffStat::makeSortedTmp( HuffStatTmpStruct* s )
 {
   int total = 0;
-  for( int j = 0; j < NHUFFSYMBOLS ; j++ ) {
+  for( HUFFINT j = 0; j < NHUFFSYMBOLS ; j++ ) {
     s[ j ].i = j;
     s[ j ].n = stat[ j ];
     total += stat[ j ];

@@ -13,7 +13,7 @@ LZBuffer::~LZBuffer()
   delete [] buf;
 }
 
-int LZBuffer::_wrap( LZPOS pos )
+LZPOS LZBuffer::_wrap( LZPOS pos )
 {
   return ( pos & LZBUFMASK );
 }
@@ -31,8 +31,8 @@ void LZBuffer::_toBuf( uint8_t c )
 void LZBuffer::_toBuf( const uint8_t* src, size_t sz )
 {
   assert( sz < LZBUFSIZE );
-  int begin = _wrap( bufPos );
-  int end = begin + sz;
+  LZPOS begin = _wrap( bufPos );
+  LZPOS end = begin + (LZPOS)sz;
 
   if ( end > LZBUFSIZE )
   {
@@ -48,11 +48,11 @@ void LZBuffer::_toBuf( const uint8_t* src, size_t sz )
   bufPos += sz;
 }
 
-void LZBuffer::_bufCpy( uint8_t* dst, int pos, size_t sz )
+void LZBuffer::_bufCpy( uint8_t* dst, LZPOS pos, size_t sz )
 {
   assert( sz < LZBUFSIZE );
-  int begin = _wrap( pos );
-  int end = begin + sz;
+  LZPOS begin = _wrap( pos );
+  LZPOS end = begin + (LZPOS)sz;
 
   if ( end > LZBUFSIZE )
   {
@@ -66,13 +66,13 @@ void LZBuffer::_bufCpy( uint8_t* dst, int pos, size_t sz )
   }
 }
 
-int LZBuffer::_nMatch( int pos, const uint8_t* p, int nLimit )
+LZPOS LZBuffer::_nMatch( LZPOS pos, const uint8_t* p, LZPOS nLimit )
 {
   assert( nLimit < LZBUFSIZE );
-  int begin = pos;
+  LZPOS begin = pos;
   if ( LZBUFSIZE - begin >= nLimit )
   {
-    for ( int i = 0; i < nLimit ; i++ )
+    for ( LZPOS i = 0; i < nLimit ; i++ )
       if ( buf[ begin + i ] != p[ i ] )
         return i;
 
@@ -81,14 +81,14 @@ int LZBuffer::_nMatch( int pos, const uint8_t* p, int nLimit )
   }
   else
   {
-    for ( int i = begin; i < LZBUFSIZE ; i++ )
+    for ( LZPOS i = begin; i < LZBUFSIZE ; i++ )
       if ( buf[ i ] != p[ i - begin ] )
         return i - begin;
 
-    int shift = LZBUFSIZE - begin;
-    int n = nLimit - shift;
+    LZPOS shift = LZBUFSIZE - begin;
+    LZPOS n = nLimit - shift;
 
-    for( int i = 0; i < n ; i++ )
+    for( LZPOS i = 0; i < n ; i++ )
       if( buf[ i ] != p[ shift + i ] )
         return shift + i;
 

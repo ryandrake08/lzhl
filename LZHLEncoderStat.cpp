@@ -18,7 +18,7 @@ LZHLEncoderStat::Symbol LZHLEncoderStat::symbolTable0[ NHUFFSYMBOLS ] =  {
 #include "Table/henc.tbl"
 };
 
-inline void LZHLEncoderStat::_addGroup( int* groups, int group, int nBits )
+inline void LZHLEncoderStat::_addGroup( HUFFINT* groups, HUFFINT group, HUFFINT nBits )
 {
   assert( nBits <= 8 );
 
@@ -30,7 +30,7 @@ inline void LZHLEncoderStat::_addGroup( int* groups, int group, int nBits )
   groups[ j ] = nBits;
 }
 
-void LZHLEncoderStat::calcStat( int* groups )
+void LZHLEncoderStat::calcStat( HUFFINT* groups )
 {
   HuffStatTmpStruct s[ NHUFFSYMBOLS ];
   int total = makeSortedTmp( s );
@@ -40,12 +40,12 @@ void LZHLEncoderStat::calcStat( int* groups )
   int pos = 0;
   int nTotal = 0;
 
-  for ( int group=0; group < 14 ; ++group )
+  for ( HUFFINT group=0; group < 14 ; ++group )
   {
     int avgGroup = ( total - nTotal )/( 16 - group );
     int i = 0, n = 0, nn = 0;
 
-    for ( int nBits=0 ;; ++nBits )
+    for ( HUFFINT nBits=0 ;; ++nBits )
     {
       int over = 0;
       int nItems = 1 << nBits;
@@ -79,14 +79,14 @@ void LZHLEncoderStat::calcStat( int* groups )
     }
   }
 
-  int bestNBits = 0, bestNBits15 = 0;
+  HUFFINT bestNBits = 0, bestNBits15 = 0;
   int best = 0x7FFFFFFF;
   int i = 0, nn = 0, left = 0;
 
   for ( int j=pos; j < NHUFFSYMBOLS ; ++j )
     left += s[ j ].n;
 
-  for ( int nBits = 0 ;; ++nBits ) {
+  for ( HUFFINT nBits = 0 ;; ++nBits ) {
     int nItems = 1 << nBits;
     if ( pos + i + nItems > NHUFFSYMBOLS )
       break;
@@ -96,7 +96,7 @@ void LZHLEncoderStat::calcStat( int* groups )
 
     int nItems15 = NHUFFSYMBOLS - ( pos + i );
 
-    int nBits15;
+    HUFFINT nBits15;
     for ( nBits15=0 ;; ++nBits15 )
       if ( 1 << nBits15 >= nItems15 )
         break;
@@ -117,21 +117,21 @@ void LZHLEncoderStat::calcStat( int* groups )
     }
   }
 
-  int pos15 = pos + ( 1 << bestNBits );
+  // (unused) int pos15 = pos + ( 1 << bestNBits );
   _addGroup( groups, 14, bestNBits );
   _addGroup( groups, 15, bestNBits15 );
 
   pos = 0;
 
-  for ( int j=0; j < 16 ; ++j ) {
-    int nBits = groups[ j ];
+  for ( HUFFUINT j=0; j < 16 ; ++j ) {
+    HUFFINT nBits = groups[ j ];
     int nItems = 1 << nBits;
     int maxK = min( nItems, NHUFFSYMBOLS - pos );
 
-    for ( int k=0; k < maxK ; ++k ) {
-      int symbol = s[ pos + k ].i;
+    for ( HUFFUINT k=0; k < maxK ; ++k ) {
+      HUFFINT symbol = s[ pos + k ].i;
       symbolTable[ symbol ].nBits = nBits + 4;
-      symbolTable[ symbol ].code = ( j << nBits ) | k;
+      symbolTable[ symbol ].code = (HUFFUINT)( j << nBits ) | k;
     }
 
     pos += 1 << nBits;

@@ -6,7 +6,7 @@ void LZHLEncoder::_callStat() {
 
   _put( NHUFFSYMBOLS - 2 );
 
-  int groups[ 16 ];
+  HUFFINT groups[ 16 ];
   stat->calcStat( groups );
 
   int lastNBits = 0;
@@ -32,7 +32,7 @@ void LZHLEncoder::putMatch( const uint8_t* src, size_t nRaw, size_t matchOver, s
   assert( matchOver <= maxMatchOver );
   assert( disp >= 0 && disp < LZBUFSIZE );
   putRaw( src, nRaw );
-  struct MatchOverItem { int symbol; int nBits; uint16_t bits; };
+  struct MatchOverItem { uint16_t symbol; int nBits; uint16_t bits; };
 
   static MatchOverItem _matchOverTable[] = {
     { 264, 1, 0x00 },
@@ -56,7 +56,7 @@ void LZHLEncoder::putMatch( const uint8_t* src, size_t nRaw, size_t matchOver, s
   };
 
   if ( matchOver < 8 ) {
-    _put( 256 + matchOver );
+    _put( 256 + (uint16_t)matchOver );
 
   } else if ( matchOver < 38 ) {
     matchOver -= 8;

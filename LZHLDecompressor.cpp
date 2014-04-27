@@ -43,7 +43,7 @@ bool LZHLDecompressor::decompress( uint8_t* dst, size_t* dstSz, const uint8_t* s
 
     Group& group = groupTable[ grp ];
 
-    int symbol;
+    HUFFINT symbol;
     int nBits = group.nBits;
 
     if ( nBits == 0 ) {
@@ -69,7 +69,6 @@ bool LZHLDecompressor::decompress( uint8_t* dst, size_t* dstSz, const uint8_t* s
     ++stat[ symbol ];
 
     int matchOver;
-    bool shift = false;
 
     if ( symbol < 256 ) {
       if ( dst >= endDst ) {
@@ -77,7 +76,7 @@ bool LZHLDecompressor::decompress( uint8_t* dst, size_t* dstSz, const uint8_t* s
       }
 
       *dst++ = (uint8_t)symbol;
-      _toBuf( symbol );
+      _toBuf( (uint8_t)symbol );
       continue; //forever
 
     } else if ( symbol == NHUFFSYMBOLS - 2 ) {

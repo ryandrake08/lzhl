@@ -23,7 +23,7 @@ LZHLCompressor::~LZHLCompressor() {
   delete [] table;
 }
 
-inline LZHASH LZHLCompressor::_updateTable( LZHASH hash, const uint8_t* src, LZPOS pos, int len )
+inline LZHASH LZHLCompressor::_updateTable( LZHASH hash, const uint8_t* src, LZPOS pos, ptrdiff_t len )
 {
   if ( len <= 0 )
     return 0;
@@ -53,7 +53,7 @@ inline LZHASH LZHLCompressor::_updateTable( LZHASH hash, const uint8_t* src, LZP
 
 size_t LZHLCompressor::compress( uint8_t* dst, const uint8_t* src, size_t sz ) {
   LZHLEncoder coder( &stat, dst );
-  const uint8_t* srcBegin = src;
+  // (unused) const uint8_t* srcBegin = src;
   const uint8_t* srcEnd = src + sz;
 
   LZHASH hash = 0;
@@ -67,46 +67,45 @@ size_t LZHLCompressor::compress( uint8_t* dst, const uint8_t* src, size_t sz ) {
   }
 
   for (;;) {
-    int srcLeft = srcEnd - src;
+    ptrdiff_t srcLeft = srcEnd - src;
     if ( srcLeft < LZMATCH ) {
       if ( srcLeft ) {
         _toBuf( src, srcLeft );
         coder.putRaw( src, srcLeft );
-        src += srcLeft;
       }
 
       break;  //forever
     }
 
-    int nRaw = 0;
-    int maxRaw = min( srcLeft - LZMATCH, LZHLEncoder::maxRaw );
+    ptrdiff_t nRaw = 0;
+    ptrdiff_t maxRaw = min( srcLeft - LZMATCH, LZHLEncoder::maxRaw );
 
 #ifdef LZLAZYMATCH
     int    lazyMatchLen = 0;
-    int    lazyMatchHashPos;
-    LZPOS  lazyMatchBufPos;
-    int    lazyMatchNRaw;
-    LZHASH lazyMatchHash;
+    int    lazyMatchHashPos = 0;
+    LZPOS  lazyMatchBufPos = 0;
+    ptrdiff_t    lazyMatchNRaw = 0;
+    LZHASH lazyMatchHash = 0;
     bool   lazyForceMatch = false;
 #endif
     for (;;) {
       LZHASH hash2 = HASH_POS( hash );
 
-      int hashPos = table[ hash2 ];
-      int wrapBufPos = _wrap( bufPos );
+      LZPOS hashPos = table[ hash2 ];
+      LZPOS wrapBufPos = _wrap( bufPos );
       table[ hash2 ] = (LZTableItem)wrapBufPos;
 
       int matchLen = 0;
       if ( hashPos != (LZTABLEINT)(-1) && hashPos != wrapBufPos )
       {
-        int matchLimit = min( min( _distance( wrapBufPos - hashPos ), srcLeft - nRaw ), LZMIN + LZHLEncoder::maxMatchOver );
+        int matchLimit = min( min( _distance( wrapBufPos - hashPos ), (int)(srcLeft - nRaw) ), LZMIN + LZHLEncoder::maxMatchOver );
         matchLen = _nMatch( hashPos, src + nRaw, matchLimit );
 
 #ifdef LZOVERLAP
         if ( _wrap( hashPos + matchLen ) == wrapBufPos )
         {
           assert( matchLen != 0 );
-          int xtraMatchLimit = min( LZMIN + LZHLEncoder::maxMatchOver - matchLen, srcLeft - nRaw - matchLen );
+          ptrdiff_t xtraMatchLimit = min( LZMIN + LZHLEncoder::maxMatchOver - matchLen, srcLeft - nRaw - matchLen );
           int xtraMatch;
           for ( xtraMatch = 0; xtraMatch < xtraMatchLimit ; ++xtraMatch )
           {
@@ -121,7 +120,7 @@ size_t LZHLCompressor::compress( uint8_t* dst, const uint8_t* src, size_t sz ) {
 #ifdef LZBACKWARDMATCH
         if ( matchLen >= LZMIN - 1 )//to ensure that buf will be overwritten
         {
-          int xtraMatchLimit = min( LZMIN + LZHLEncoder::maxMatchOver - matchLen, nRaw );
+          ptrdiff_t xtraMatchLimit = min( LZMIN + LZHLEncoder::maxMatchOver - matchLen, nRaw );
           int d = (int)_distance( bufPos - hashPos );
           xtraMatchLimit = min( min( xtraMatchLimit, d - matchLen ), LZBUFSIZE - d );
           int xtraMatch;

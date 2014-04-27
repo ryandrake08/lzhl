@@ -20,7 +20,7 @@ public:
 
 private:
   void _wrapTable();
-  LZHASH _updateTable( LZHASH hash, const uint8_t* src, LZPOS pos, int len );
+  LZHASH _updateTable( LZHASH hash, const uint8_t* src, LZPOS pos, ptrdiff_t len );
 
 private:
   LZHLEncoderStat stat;

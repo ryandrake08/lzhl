@@ -16,10 +16,10 @@ public:
   ~LZHLEncoderStat();
 
 public:
-  void calcStat( int* groups );
+  void calcStat( HUFFINT* groups );
 
 private:
-  inline static void _addGroup( int* groups, int group, int nBits );
+  inline static void _addGroup( HUFFINT* groups, HUFFINT group, HUFFINT nBits );
 
 public:
   int nextStat;

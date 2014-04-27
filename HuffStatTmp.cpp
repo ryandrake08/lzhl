@@ -14,11 +14,11 @@ inline int operator<( const HuffStatTmpStruct& a,
   return cmpHuffStatTmpStruct( a, b ) < 0;
 }
 
-static int __cdecl _cmpStat( const void* a_, const void* b_ ) {
-  HuffStatTmpStruct* a = (HuffStatTmpStruct*)a_;
-  HuffStatTmpStruct* b = (HuffStatTmpStruct*)b_;
-  return cmpHuffStatTmpStruct( *a, *b );
-}
+//static int __cdecl _cmpStat( const void* a_, const void* b_ ) {
+//  HuffStatTmpStruct* a = (HuffStatTmpStruct*)a_;
+//  HuffStatTmpStruct* b = (HuffStatTmpStruct*)b_;
+//  return cmpHuffStatTmpStruct( *a, *b );
+//}
 
 void shellSort( HuffStatTmpStruct* a, int N ) {
   int i, j;
