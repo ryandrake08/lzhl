@@ -1,4 +1,5 @@
 #include "LZHLEncoderStat.hpp"
+#include <cstdlib>
 #include <cstring>
 #include <cassert>
 
@@ -15,7 +16,7 @@ LZHLEncoderStat::~LZHLEncoderStat()
 }
 
 LZHLEncoderStat::Symbol LZHLEncoderStat::symbolTable0[ NHUFFSYMBOLS ] =  {
-#include "Table/henc.tbl"
+#include "Table/Henc.tbl"
 };
 
 inline void LZHLEncoderStat::_addGroup( HUFFINT* groups, HUFFINT group, HUFFINT nBits )

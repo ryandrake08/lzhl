@@ -12,9 +12,9 @@ LZHLDecoderStat::~LZHLDecoderStat() {
 }
 
 LZHLDecoderStat::Group LZHLDecoderStat::groupTable0[ 16 ] =  {
-  #include "Table/hdec_g.tbl"
+  #include "Table/Hdec_g.tbl"
 };
 
 HUFFINT LZHLDecoderStat::symbolTable0[ NHUFFSYMBOLS ] =  {
-  #include "Table/hdec_s.tbl"
+  #include "Table/Hdec_s.tbl"
 };

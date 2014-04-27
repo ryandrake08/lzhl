@@ -83,7 +83,7 @@ void LZHLEncoder::putMatch( const uint8_t* src, size_t nRaw, size_t matchOver, s
   }
 
   static struct DispItem { int nBits; uint16_t bits; } _dispTable[] = {
-#include "Table/hdisp.tbl"
+#include "Table/Hdisp.tbl"
   };
 
 #if LZBUFBITS < 8
