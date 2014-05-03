@@ -1,5 +1,5 @@
-#ifndef __J2K__LZH__HuffStat_HPP__
-#define __J2K__LZH__HuffStat_HPP__
+#ifndef  LZHL_HuffStat_HPP
+#define  LZHL_HuffStat_HPP
 
 #include "LZHMacro.hpp"
 #include "HuffStatTmp.hpp"

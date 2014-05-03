@@ -1,5 +1,5 @@
-#ifndef __J2K__LZH__LZBuffer_HPP__
-#define __J2K__LZH__LZBuffer_HPP__
+#ifndef  LZHL_LZBuffer_HPP
+#define  LZHL_LZBuffer_HPP
 
 #include "LZHMacro.hpp"
 #include <cstddef>

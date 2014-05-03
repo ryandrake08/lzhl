@@ -1,5 +1,5 @@
-#ifndef __J2K__LZH__LZHLEncoder_HPP__
-#define __J2K__LZH__LZHLEncoder_HPP__
+#ifndef  LZHL_LZHLEncoder_HPP
+#define  LZHL_LZHLEncoder_HPP
 
 #include "LZHLEncoderStat.hpp"
 #include "LZHMacro.hpp"

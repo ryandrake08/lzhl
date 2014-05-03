@@ -1,5 +1,5 @@
-#ifndef __J2K__LZH__LZHLCompressor_HPP__
-#define __J2K__LZH__LZHLCompressor_HPP__
+#ifndef  LZHL_LZHLCompressor_HPP
+#define  LZHL_LZHLCompressor_HPP
 
 #include "LZBuffer.hpp"
 #include "LZHLEncoder.hpp"

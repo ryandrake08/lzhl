@@ -1,5 +1,5 @@
-#ifndef __J2K__LZH__LZHMacro_HPP__
-#define __J2K__LZH__LZHMacro_HPP__
+#ifndef  LZHL_LZHMacro_HPP
+#define  LZHL_LZHMacro_HPP
 
 #include <stdint.h>
 
