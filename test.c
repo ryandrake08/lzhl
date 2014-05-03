@@ -84,7 +84,7 @@ int main(int argc, char** argv)
 
     count = 10;
     while(count--) {
-        /* Initialize random buffer size with random data */
+        /* Initialize random buffer size with semi-random data */
         inbufsize = rand() % MAXBUFSIZE;
         for(i=0; i<inbufsize; i++) {
             inbuf[i] = rand()%0x08;

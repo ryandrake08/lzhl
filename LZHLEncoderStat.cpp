@@ -2,6 +2,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <cassert>
+#include <algorithm>
 
 LZHLEncoderStat::LZHLEncoderStat()
 {
@@ -127,7 +128,7 @@ void LZHLEncoderStat::calcStat( HUFFINT* groups )
   for ( HUFFUINT j=0; j < 16 ; ++j ) {
     HUFFINT nBits = groups[ j ];
     int nItems = 1 << nBits;
-    int maxK = min( nItems, NHUFFSYMBOLS - pos );
+    int maxK = std::min( nItems, NHUFFSYMBOLS - pos );
 
     for ( HUFFUINT k=0; k < maxK ; ++k ) {
       HUFFINT symbol = s[ pos + k ].i;

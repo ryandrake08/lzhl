@@ -7,7 +7,8 @@
 
 class LZHLEncoder {
 public:
-  enum { maxMatchOver = 517, maxRaw = 64 };
+  static const int maxRaw = 64;
+  static const int maxMatchOver = 517;
   LZHLEncoder( LZHLEncoderStat* stat_, uint8_t* dst_ );
   ~LZHLEncoder();
 

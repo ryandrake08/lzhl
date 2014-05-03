@@ -1,5 +1,6 @@
 #include "LZHLCompressor.hpp"
 #include <cassert>
+#include <algorithm>
 
 inline LZHASH _calcHash( const uint8_t* src )
 {
@@ -78,7 +79,7 @@ size_t LZHLCompressor::compress( uint8_t* dst, const uint8_t* src, size_t sz ) {
     }
 
     ptrdiff_t nRaw = 0;
-    ptrdiff_t maxRaw = min( srcLeft - LZMATCH, LZHLEncoder::maxRaw );
+    ptrdiff_t maxRaw = std::min( srcLeft - LZMATCH, (ptrdiff_t)LZHLEncoder::maxRaw );
 
 #ifdef LZLAZYMATCH
     int    lazyMatchLen = 0;
@@ -98,14 +99,14 @@ size_t LZHLCompressor::compress( uint8_t* dst, const uint8_t* src, size_t sz ) {
       int matchLen = 0;
       if ( hashPos != (LZTABLEINT)(-1) && hashPos != wrapBufPos )
       {
-        int matchLimit = min( min( _distance( wrapBufPos - hashPos ), (int)(srcLeft - nRaw) ), LZMIN + LZHLEncoder::maxMatchOver );
+        int matchLimit = std::min( std::min( _distance( wrapBufPos - hashPos ), (int)(srcLeft - nRaw) ), LZMIN + LZHLEncoder::maxMatchOver );
         matchLen = _nMatch( hashPos, src + nRaw, matchLimit );
 
 #ifdef LZOVERLAP
         if ( _wrap( hashPos + matchLen ) == wrapBufPos )
         {
           assert( matchLen != 0 );
-          ptrdiff_t xtraMatchLimit = min( LZMIN + LZHLEncoder::maxMatchOver - matchLen, srcLeft - nRaw - matchLen );
+          ptrdiff_t xtraMatchLimit = std::min( LZMIN + (ptrdiff_t)LZHLEncoder::maxMatchOver - matchLen, srcLeft - nRaw - matchLen );
           int xtraMatch;
           for ( xtraMatch = 0; xtraMatch < xtraMatchLimit ; ++xtraMatch )
           {
@@ -120,9 +121,9 @@ size_t LZHLCompressor::compress( uint8_t* dst, const uint8_t* src, size_t sz ) {
 #ifdef LZBACKWARDMATCH
         if ( matchLen >= LZMIN - 1 )//to ensure that buf will be overwritten
         {
-          ptrdiff_t xtraMatchLimit = min( LZMIN + LZHLEncoder::maxMatchOver - matchLen, nRaw );
+          int xtraMatchLimit = (int)std::min( LZMIN + LZHLEncoder::maxMatchOver - (ptrdiff_t)matchLen, nRaw );
           int d = (int)_distance( bufPos - hashPos );
-          xtraMatchLimit = min( min( xtraMatchLimit, d - matchLen ), LZBUFSIZE - d );
+          xtraMatchLimit = std::min( std::min( xtraMatchLimit, d - matchLen ), LZBUFSIZE - d );
           int xtraMatch;
           for ( xtraMatch = 0; xtraMatch < xtraMatchLimit ; ++xtraMatch )
           {
@@ -153,7 +154,7 @@ size_t LZHLCompressor::compress( uint8_t* dst, const uint8_t* src, size_t sz ) {
       if ( lazyMatchLen >= LZMIN ) {
         if ( matchLen > lazyMatchLen ) {
           coder.putMatch( src, nRaw, matchLen - LZMIN, _distance( wrapBufPos - hashPos ) );
-          hash = _updateTable( hash, src + nRaw, bufPos + 1, min( matchLen - 1, srcEnd - (src + nRaw + 1) - LZMATCH ) );
+          hash = _updateTable( hash, src + nRaw, bufPos + 1, std::min( (ptrdiff_t)matchLen - 1, srcEnd - (src + nRaw + 1) - LZMATCH ) );
           _toBuf( src + nRaw, matchLen );
           src += nRaw + matchLen;
           break;//for ( nRaw )
@@ -165,7 +166,7 @@ size_t LZHLCompressor::compress( uint8_t* dst, const uint8_t* src, size_t sz ) {
           hash = lazyMatchHash;
           UPDATE_HASH_EX( hash, src + nRaw );
           coder.putMatch( src, nRaw, lazyMatchLen - LZMIN, _distance( bufPos - lazyMatchHashPos ) );
-          hash = _updateTable( hash, src + nRaw + 1, bufPos + 2, min( lazyMatchLen - 2, srcEnd - (src + nRaw + 2) - LZMATCH ) );
+          hash = _updateTable( hash, src + nRaw + 1, bufPos + 2, std::min( (ptrdiff_t)lazyMatchLen - 2, srcEnd - (src + nRaw + 2) - LZMATCH ) );
           _toBuf( src + nRaw, lazyMatchLen );
           src += nRaw + lazyMatchLen;
 
@@ -187,7 +188,7 @@ size_t LZHLCompressor::compress( uint8_t* dst, const uint8_t* src, size_t sz ) {
 #endif
         {
           coder.putMatch( src, nRaw, matchLen - LZMIN, _distance( wrapBufPos - hashPos ) );
-          hash = _updateTable( hash, src + nRaw, bufPos + 1, min( matchLen - 1, srcEnd - (src + nRaw + 1) - LZMATCH ) );
+          hash = _updateTable( hash, src + nRaw, bufPos + 1, std::min( (ptrdiff_t)matchLen - 1, srcEnd - (src + nRaw + 1) - LZMATCH ) );
           _toBuf( src + nRaw, matchLen );
           src += nRaw + matchLen;
 
@@ -205,7 +206,7 @@ size_t LZHLCompressor::compress( uint8_t* dst, const uint8_t* src, size_t sz ) {
         if ( lazyMatchLen >= LZMIN )
         {
           coder.putMatch( src, nRaw, lazyMatchLen - LZMIN, _distance( bufPos - lazyMatchHashPos ) );
-          hash = _updateTable( hash, src + nRaw, bufPos + 1, min( lazyMatchLen - 1, srcEnd - (src + nRaw + 1) - LZMATCH ) );
+          hash = _updateTable( hash, src + nRaw, bufPos + 1, std::min( (ptrdiff_t)lazyMatchLen - 1, srcEnd - (src + nRaw + 1) - LZMATCH ) );
           _toBuf( src + nRaw, lazyMatchLen );
           src += nRaw + lazyMatchLen;
           break;//for ( nRaw )

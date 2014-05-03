@@ -3,8 +3,6 @@ LIBOBJS = HuffStat.o HuffStatTmp.o LZBuffer.o LZHL.o LZHLCompressor.o LZHLDecode
 EXEOUT = test
 EXEOBJS = test.o
 
-CXXFLAGS = -std=c++0x
-
 $(EXEOUT): $(EXEOBJS) $(LIBOUT)
 	$(CXX) -o $(EXEOUT) $(EXEOBJS) $(LIBOUT)
 

@@ -1,9 +1,7 @@
 #ifndef __J2K__LZH__LZHMacro_HPP__
 #define __J2K__LZH__LZHMacro_HPP__
 
-#include <cstdint>
-
-#define min(a, b) (((a) < (b)) ? (a) : (b)) 
+#include <stdint.h>
 
 #ifdef _MSC_VER
   #pragma intrinsic( memcpy, memset, _rotl )

@@ -1,6 +1,9 @@
 #include "LZHLEncoder.hpp"
 #include <cassert>
 
+const int LZHLEncoder::maxRaw;
+const int LZHLEncoder::maxMatchOver;
+
 LZHLEncoder::LZHLEncoder( LZHLEncoderStat* stat_, uint8_t* dst_ )
 : stat( stat_ ),
   sstat( stat_->stat ),
