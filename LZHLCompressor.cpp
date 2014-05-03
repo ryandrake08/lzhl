@@ -153,7 +153,7 @@ size_t LZHLCompressor::compress( uint8_t* dst, const uint8_t* src, size_t sz ) {
       if ( lazyMatchLen >= LZMIN ) {
         if ( matchLen > lazyMatchLen ) {
           coder.putMatch( src, nRaw, matchLen - LZMIN, _distance( wrapBufPos - hashPos ) );
-          hash = _updateTable( hash, src + nRaw, bufPos + 1, min( matchLen - 1, srcEnd - (src + nRaw + 1) ) );
+          hash = _updateTable( hash, src + nRaw, bufPos + 1, min( matchLen - 1, srcEnd - (src + nRaw + 1) - LZMATCH ) );
           _toBuf( src + nRaw, matchLen );
           src += nRaw + matchLen;
           break;//for ( nRaw )
@@ -165,7 +165,7 @@ size_t LZHLCompressor::compress( uint8_t* dst, const uint8_t* src, size_t sz ) {
           hash = lazyMatchHash;
           UPDATE_HASH_EX( hash, src + nRaw );
           coder.putMatch( src, nRaw, lazyMatchLen - LZMIN, _distance( bufPos - lazyMatchHashPos ) );
-          hash = _updateTable( hash, src + nRaw + 1, bufPos + 2, min( lazyMatchLen - 2, srcEnd - (src + nRaw + 2) ) );
+          hash = _updateTable( hash, src + nRaw + 1, bufPos + 2, min( lazyMatchLen - 2, srcEnd - (src + nRaw + 2) - LZMATCH ) );
           _toBuf( src + nRaw, lazyMatchLen );
           src += nRaw + lazyMatchLen;
 
@@ -187,7 +187,7 @@ size_t LZHLCompressor::compress( uint8_t* dst, const uint8_t* src, size_t sz ) {
 #endif
         {
           coder.putMatch( src, nRaw, matchLen - LZMIN, _distance( wrapBufPos - hashPos ) );
-          hash = _updateTable( hash, src + nRaw, bufPos + 1, min( matchLen - 1, srcEnd - (src + nRaw + 1) ) );
+          hash = _updateTable( hash, src + nRaw, bufPos + 1, min( matchLen - 1, srcEnd - (src + nRaw + 1) - LZMATCH ) );
           _toBuf( src + nRaw, matchLen );
           src += nRaw + matchLen;
 
@@ -205,7 +205,7 @@ size_t LZHLCompressor::compress( uint8_t* dst, const uint8_t* src, size_t sz ) {
         if ( lazyMatchLen >= LZMIN )
         {
           coder.putMatch( src, nRaw, lazyMatchLen - LZMIN, _distance( bufPos - lazyMatchHashPos ) );
-          hash = _updateTable( hash, src + nRaw, bufPos + 1, min( lazyMatchLen - 1, srcEnd - (src + nRaw + 1) ) );
+          hash = _updateTable( hash, src + nRaw, bufPos + 1, min( lazyMatchLen - 1, srcEnd - (src + nRaw + 1) - LZMATCH ) );
           _toBuf( src + nRaw, lazyMatchLen );
           src += nRaw + lazyMatchLen;
           break;//for ( nRaw )
