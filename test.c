@@ -97,5 +97,7 @@ int main(int argc, char** argv)
         errors += compare(inbufsize, inbuf, outbufsize, outbuf);
     }
 
+    delComp(compressor);
+    delDecomp(decompressor);
     return EXIT_SUCCESS;
 }
