@@ -3,12 +3,12 @@ LIBOBJS = HuffStat.o HuffStatTmp.o LZBuffer.o LZHL.o LZHLCompressor.o LZHLDecode
 EXEOUT = test
 EXEOBJS = test.o
 
-$(EXEOUT): $(EXEOBJS) $(LIBOUT)
-	$(CXX) -o $(EXEOUT) $(EXEOBJS) $(LIBOUT)
-
 $(LIBOUT): $(LIBOBJS)
 	$(AR) rcs $(LIBOUT) $(LIBOBJS)
     
+$(EXEOUT): $(EXEOBJS) $(LIBOUT)
+	$(CXX) -o $(EXEOUT) $(EXEOBJS) $(LIBOUT)
+
 .cpp.o:
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
